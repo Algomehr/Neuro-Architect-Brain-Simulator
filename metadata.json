@@ -1,0 +1,5 @@
+{
+  "name": "Neuro-Architect: Brain Simulator",
+  "description": "An interactive web application that allows users to engineer a virtual brain by adjusting fundamental neurochemical and structural parameters. Using the Gemini API, it generates detailed narrative and analytical reports, along with data visualizations, to show the impact of these changes on personality and cognitive abilities.",
+  "requestFramePermissions": []
+}
