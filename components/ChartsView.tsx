@@ -53,10 +53,18 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     return null;
 };
 
+const radarSubjectMap: { [key: string]: string } = {
+    memory: 'حافظه',
+    creativity: 'خلاقیت',
+    attention: 'توجه',
+    logic: 'منطق',
+    emotionalIntelligence: 'هوش هیجانی',
+};
+
 
 const ChartsView: React.FC<ChartsViewProps> = ({ chartsData }) => {
     const radarData = Object.entries(chartsData.radarProfile).map(([name, value]) => ({
-        subject: name.charAt(0).toUpperCase() + name.slice(1).replace(/([A-Z])/g, ' $1'),
+        subject: radarSubjectMap[name as keyof typeof radarSubjectMap] || name,
         A: value,
         fullMark: 100,
     }));
@@ -69,7 +77,7 @@ const ChartsView: React.FC<ChartsViewProps> = ({ chartsData }) => {
                     <PolarGrid stroke="#4a5568" />
                     <PolarAngleAxis dataKey="subject" tick={{ fill: '#a0aec0', fontSize: 12 }} />
                     <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#718096', fontSize: 10 }} />
-                    <Radar name="Cognitive Profile" dataKey="A" stroke="#38bdf8" fill="#38bdf8" fillOpacity={0.6} />
+                    <Radar name="پروفایل شناختی" dataKey="A" stroke="#38bdf8" fill="#38bdf8" fillOpacity={0.6} />
                     <Tooltip content={<CustomTooltip />} />
                 </RadarChart>
             </ResponsiveContainer>
@@ -106,8 +114,8 @@ const ChartsView: React.FC<ChartsViewProps> = ({ chartsData }) => {
                     <YAxis tick={{ fill: '#a0aec0', fontSize: 12 }}/>
                     <Tooltip content={<CustomTooltip />} />
                     <Legend wrapperStyle={{fontSize: "12px"}}/>
-                    <Line type="monotone" dataKey="cortisol" stroke="#f87171" strokeWidth={2} name="Cortisol" />
-                    <Line type="monotone" dataKey="dopamine" stroke="#38bdf8" strokeWidth={2} name="Dopamine" />
+                    <Line type="monotone" dataKey="cortisol" stroke="#f87171" strokeWidth={2} name="کورتیزول" />
+                    <Line type="monotone" dataKey="dopamine" stroke="#38bdf8" strokeWidth={2} name="دوپامین" />
                 </LineChart>
             </ResponsiveContainer>
         </ChartContainer>
@@ -120,7 +128,7 @@ const ChartsView: React.FC<ChartsViewProps> = ({ chartsData }) => {
                     <YAxis type="number" dataKey="y" name="y" domain={[-12, 12]} hide />
                     <ZAxis type="number" dataKey="activity" range={[100, 1000]} name="activity" />
                     <Tooltip cursor={{ strokeDasharray: '3 3' }} content={<CustomTooltip />}/>
-                    <Scatter name="Brain Regions" data={chartsData.brainActivityMap} fillOpacity={0.7}>
+                    <Scatter name="نواحی مغز" data={chartsData.brainActivityMap} fillOpacity={0.7}>
                         {chartsData.brainActivityMap.map((entry, index) => (
                            <Cell key={`cell-${index}`} fill={RADAR_COLORS[index % RADAR_COLORS.length]} />
                         ))}

@@ -8,6 +8,14 @@ interface ReportViewProps {
   reportData?: ResearcherReport;
 }
 
+const bigFiveMap: { [key: string]: string } = {
+    openness: 'گشودگی به تجربه',
+    conscientiousness: 'وجدان‌گرایی',
+    extraversion: 'برون‌گرایی',
+    agreeableness: 'سازگاری',
+    neuroticism: 'روان‌رنجوری',
+};
+
 const ReportSection: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
     <div className="mb-6">
         <h3 className="text-lg font-semibold text-blue-300 border-b border-blue-300/20 pb-2 mb-3">{title}</h3>
@@ -46,7 +54,7 @@ const ReportView: React.FC<ReportViewProps> = ({ title, content, reportData }) =
                     {Object.entries(reportData.bigFiveProfile).map(([key, value]) => (
                         <div key={key}>
                             <div className="flex justify-between items-center mb-1">
-                                <span className="text-sm font-medium capitalize">{key}</span>
+                                <span className="text-sm font-medium capitalize">{bigFiveMap[key as keyof typeof bigFiveMap] || key}</span>
                                 <span className="text-sm font-bold text-blue-300">{value}/100</span>
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2.5">

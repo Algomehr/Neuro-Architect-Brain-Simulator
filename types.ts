@@ -1,4 +1,3 @@
-
 export interface BrainParameters {
   dopamine: number;
   serotonin: number;
@@ -62,8 +61,46 @@ export interface ChartsData {
   brainActivityMap: BrainActivityPoint[];
 }
 
+export interface FormulaExplanation {
+  formula: string;
+  calculation: string;
+  explanation: string;
+}
+
+export interface ScientificAnalysis {
+  cognitiveMetrics: Record<string, FormulaExplanation>;
+  personalityTraits: Record<string, FormulaExplanation>;
+  summary: string;
+}
+
 export interface GeminiResponse {
   narrativeReport: string;
   researcherReport: ResearcherReport;
   chartsData: ChartsData;
+  scientificAnalysis: ScientificAnalysis;
+}
+
+export interface ChatMessage {
+    role: 'user' | 'model';
+    text: string;
+}
+
+export interface EmotionalResponsePoint {
+    time: string; // e.g., "شروع", "اواسط", "پایان"
+    stress: number;
+    focus: number;
+    confidence: number;
+}
+
+export interface PerformanceMetric {
+    name: string;
+    value: number;
+    explanation: string;
+}
+
+export interface ScenarioSimulation {
+    narrative: string;
+    outcome: string;
+    emotionalResponseCurve: EmotionalResponsePoint[];
+    performanceMetrics: PerformanceMetric[];
 }

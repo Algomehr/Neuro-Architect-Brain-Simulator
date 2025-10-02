@@ -1,10 +1,11 @@
-
 import React, { useState, useCallback } from 'react';
-import { BrainParameters, GeminiResponse } from './types';
-import { generateBrainProfile } from './services/geminiService';
+import { BrainParameters, GeminiResponse, ChatMessage, ScenarioSimulation } from './types';
+import { generateBrainProfile, createChatSession, simulateScenario } from './services/geminiService';
 import ControlPanel from './components/ControlPanel';
 import OutputDisplay from './components/OutputDisplay';
 import { BrainCircuit, Bot } from 'lucide-react';
+import type { Chat } from '@google/genai';
+
 
 const App: React.FC = () => {
   const [brainParams, setBrainParams] = useState<BrainParameters>({
@@ -22,11 +23,29 @@ const App: React.FC = () => {
   const [simulationResult, setSimulationResult] = useState<GeminiResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [chatSession, setChatSession] = useState<Chat | null>(null);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const [isChatLoading, setIsChatLoading] = useState<boolean>(false);
+  const [scenarioResult, setScenarioResult] = useState<ScenarioSimulation | null>(null);
+  const [isScenarioLoading, setIsScenarioLoading] = useState<boolean>(false);
+
+
+  const handleResetScenario = useCallback(() => {
+    setScenarioResult(null);
+    setError(null);
+  }, []);
 
   const handleGenerate = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     setSimulationResult(null);
+    // Reset chat on new simulation
+    setChatSession(null);
+    setChatHistory([]);
+    setIsChatLoading(false);
+    // Reset scenario on new simulation
+    handleResetScenario();
+
     try {
       const result = await generateBrainProfile(brainParams);
       setSimulationResult(result);
@@ -36,7 +55,54 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [brainParams]);
+  }, [brainParams, handleResetScenario]);
+
+  const handleSendMessage = async (message: string) => {
+    if (!simulationResult || !message.trim()) return;
+
+    const newUserMessage: ChatMessage = { role: 'user', text: message };
+    setChatHistory(prev => [...prev, newUserMessage]);
+    setIsChatLoading(true);
+
+    try {
+        // Lazy initialization of the chat session
+        const session = chatSession ?? createChatSession(brainParams, simulationResult);
+        if (!chatSession) {
+            setChatSession(session);
+        }
+        
+        const response = await session.sendMessage(message);
+        const modelResponse: ChatMessage = { role: 'model', text: response.text };
+        
+        setChatHistory(prev => [...prev, modelResponse]);
+
+    } catch (err) {
+        console.error("Chat error:", err);
+        const errorResponse: ChatMessage = { role: 'model', text: "متاسفانه در پردازش درخواست شما خطایی رخ داد. لطفا دوباره تلاش کنید." };
+        setChatHistory(prev => [...prev, errorResponse]);
+    } finally {
+        setIsChatLoading(false);
+    }
+  };
+
+  const handleSimulateScenario = async (scenario: string) => {
+    if (!simulationResult) return;
+
+    setIsScenarioLoading(true);
+    setError(null);
+    setScenarioResult(null);
+
+    try {
+        const result = await simulateScenario(brainParams, simulationResult, scenario);
+        setScenarioResult(result);
+    } catch (err) {
+        console.error(err);
+        setError('خطایی در حین شبیه‌سازی سناریو رخ داد. لطفا دوباره تلاش کنید.');
+    } finally {
+        setIsScenarioLoading(false);
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-200 font-sans p-4 lg:p-6">
@@ -67,6 +133,13 @@ const App: React.FC = () => {
             result={simulationResult}
             isLoading={isLoading}
             error={error}
+            chatHistory={chatHistory}
+            isChatLoading={isChatLoading}
+            onSendMessage={handleSendMessage}
+            scenarioResult={scenarioResult}
+            isScenarioLoading={isScenarioLoading}
+            onSimulateScenario={handleSimulateScenario}
+            onResetScenario={handleResetScenario}
           />
         </div>
       </main>
