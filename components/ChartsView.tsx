@@ -77,11 +77,16 @@ const radarSubjectMap: { [key: string]: string } = {
 
 
 const ChartsView: React.FC<ChartsViewProps> = ({ chartsData }) => {
-    const radarData = Object.entries(chartsData.radarProfile).map(([name, value]) => ({
+    // Defensive coding: ensure data exists and provide empty arrays as fallbacks to prevent crashes.
+    const radarData = chartsData.radarProfile ? Object.entries(chartsData.radarProfile).map(([name, value]) => ({
         subject: radarSubjectMap[name as keyof typeof radarSubjectMap] || name,
         A: value,
         fullMark: 100,
-    }));
+    })) : [];
+    
+    const neurotransmitterBalanceData = chartsData.neurotransmitterBalance || [];
+    const stressResponseCurveData = chartsData.stressResponseCurve || [];
+    const brainActivityMapData = chartsData.brainActivityMap || [];
     
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -101,7 +106,7 @@ const ChartsView: React.FC<ChartsViewProps> = ({ chartsData }) => {
             <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                     <Pie
-                        data={chartsData.neurotransmitterBalance}
+                        data={neurotransmitterBalanceData}
                         cx="50%"
                         cy="50%"
                         labelLine={false}
@@ -111,7 +116,7 @@ const ChartsView: React.FC<ChartsViewProps> = ({ chartsData }) => {
                         nameKey="name"
                         label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                     >
-                        {chartsData.neurotransmitterBalance.map((entry, index) => (
+                        {neurotransmitterBalanceData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                         ))}
                     </Pie>
@@ -122,7 +127,7 @@ const ChartsView: React.FC<ChartsViewProps> = ({ chartsData }) => {
 
         <ChartContainer title="واکنش به رویداد استرس‌زا">
             <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartsData.stressResponseCurve} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
+                <LineChart data={stressResponseCurveData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#4a5568" />
                     <XAxis dataKey="time" tick={{ fill: '#a0aec0', fontSize: 12 }} />
                     <YAxis tick={{ fill: '#a0aec0', fontSize: 12 }}/>
@@ -142,8 +147,8 @@ const ChartsView: React.FC<ChartsViewProps> = ({ chartsData }) => {
                     <YAxis type="number" dataKey="y" name="y" domain={[-12, 12]} hide />
                     <ZAxis type="number" dataKey="activity" range={[100, 1000]} name="activity" />
                     <Tooltip cursor={{ strokeDasharray: '3 3' }} content={<CustomTooltip />}/>
-                    <Scatter name="نواحی مغز" data={chartsData.brainActivityMap} fillOpacity={0.7}>
-                        {chartsData.brainActivityMap.map((entry, index) => (
+                    <Scatter name="نواحی مغز" data={brainActivityMapData} fillOpacity={0.7}>
+                        {brainActivityMapData.map((entry, index) => (
                            <Cell key={`cell-${index}`} fill={RADAR_COLORS[index % RADAR_COLORS.length]} />
                         ))}
                         <LabelList dataKey="area" position="right" style={{ fill: '#a0aec0', fontSize: 12 }} />
