@@ -21,6 +21,7 @@ import {
   ScatterChart,
   Scatter,
   ZAxis,
+  LabelList,
 } from 'recharts';
 
 interface ChartsViewProps {
@@ -41,9 +42,22 @@ const PIE_COLORS = ['#38bdf8', '#a78bfa', '#34d399', '#f87171', '#fbbf24'];
 
 const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
+        const pointData = payload[0].payload;
+
+        // Custom tooltip for Brain Activity Map (Scatter Chart)
+        if (pointData && pointData.area) {
+             return (
+                <div className="bg-gray-900/80 p-2 border border-gray-600 rounded-md shadow-lg text-sm">
+                    <p className="font-bold text-blue-300">{pointData.area}</p>
+                    <p className="text-gray-400">{`فعالیت: ${pointData.activity}`}</p>
+                </div>
+            );
+        }
+
+        // Default tooltip for other charts
         return (
             <div className="bg-gray-900/80 p-2 border border-gray-600 rounded-md shadow-lg text-sm">
-                <p className="label text-gray-300">{`${label}`}</p>
+                <p className="label text-gray-300 font-bold">{label}</p>
                 {payload.map((pld: any, index: number) => (
                     <p key={index} style={{ color: pld.color }}>{`${pld.name}: ${pld.value}`}</p>
                 ))}
@@ -122,7 +136,7 @@ const ChartsView: React.FC<ChartsViewProps> = ({ chartsData }) => {
 
         <ChartContainer title="نقشه فعالیت مغزی (ساده‌شده)">
             <ResponsiveContainer width="100%" height="100%">
-                <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <ScatterChart margin={{ top: 20, right: 80, bottom: 20, left: 20 }}>
                     <CartesianGrid stroke="#4a5568" />
                     <XAxis type="number" dataKey="x" name="x" domain={[-12, 12]} hide />
                     <YAxis type="number" dataKey="y" name="y" domain={[-12, 12]} hide />
@@ -132,6 +146,7 @@ const ChartsView: React.FC<ChartsViewProps> = ({ chartsData }) => {
                         {chartsData.brainActivityMap.map((entry, index) => (
                            <Cell key={`cell-${index}`} fill={RADAR_COLORS[index % RADAR_COLORS.length]} />
                         ))}
+                        <LabelList dataKey="area" position="right" style={{ fill: '#a0aec0', fontSize: 12 }} />
                     </Scatter>
                 </ScatterChart>
             </ResponsiveContainer>
