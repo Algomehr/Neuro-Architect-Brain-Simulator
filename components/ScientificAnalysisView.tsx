@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ScientificAnalysis, FormulaExplanation } from '../types';
 import * as ReactKatex from 'react-katex';

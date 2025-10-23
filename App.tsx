@@ -1,9 +1,10 @@
+
 import React, { useState, useCallback } from 'react';
 import { BrainParameters, GeminiResponse, ChatMessage, ScenarioSimulation } from './types';
 import { generateBrainProfile, createChatSession, simulateScenario } from './services/geminiService';
 import ControlPanel from './components/ControlPanel';
 import OutputDisplay from './components/OutputDisplay';
-import { BrainCircuit, Bot } from 'lucide-react';
+import { BrainCircuit, Bot, User } from 'lucide-react';
 import type { Chat } from '@google/genai';
 
 
@@ -114,10 +115,16 @@ const App: React.FC = () => {
             <p className="text-sm text-gray-400">یک ذهن را مهندسی کنید و پیامدهای آن را مشاهده نمایید</p>
           </div>
         </div>
-        <a href="https://github.com/google/generative-ai-docs/tree/main/site/en/gemini-api/docs/prompting_with_media" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 transition-colors">
-            <Bot size={16} />
-            Powered by Gemini
-        </a>
+        <div className="text-right">
+            <a href="https://github.com/google/generative-ai-docs/tree/main/site/en/gemini-api/docs/prompting_with_media" target="_blank" rel="noopener noreferrer" className="flex items-center justify-end gap-2 text-sm text-blue-400 hover:text-blue-300 transition-colors">
+                <Bot size={16} />
+                Powered by Gemini
+            </a>
+            <a href="https://mehrdad.netlify.app/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-end gap-2 text-xs text-gray-400 hover:text-blue-300 transition-colors mt-2">
+                 <User size={12} />
+                 توسعه یافته توسط مهرداد رجبی
+            </a>
+        </div>
       </header>
       <main className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <div className="lg:col-span-1 xl:col-span-1">
